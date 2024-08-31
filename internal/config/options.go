@@ -89,6 +89,7 @@ const (
 	defaultWatchdog                           = true
 	defaultInvidiousInstance                  = "yewtu.be"
 	defaultWebAuthn                           = false
+	defaultContentSecurityPolicy              = "default-src 'self'; img-src * data:; media-src *; frame-src *; style-src 'self' 'nonce-%s'; require-trusted-types-for 'script'; trusted-types ttpolicy;"
 )
 
 var defaultHTTPClientUserAgent = "Mozilla/5.0 (compatible; Miniflux/" + version.Version + "; +https://miniflux.app)"
@@ -177,6 +178,7 @@ type Options struct {
 	invidiousInstance                  string
 	mediaProxyPrivateKey               []byte
 	webAuthn                           bool
+	contentSecurityPolicy              string
 }
 
 // NewOptions returns Options with default values.
@@ -256,6 +258,7 @@ func NewOptions() *Options {
 		invidiousInstance:                  defaultInvidiousInstance,
 		mediaProxyPrivateKey:               crypto.GenerateRandomBytes(16),
 		webAuthn:                           defaultWebAuthn,
+		contentSecurityPolicy:              defaultContentSecurityPolicy,
 	}
 }
 
@@ -654,6 +657,11 @@ func (o *Options) FilterEntryMaxAgeDays() int {
 	return o.filterEntryMaxAgeDays
 }
 
+// ContentSecurityPolicy returns value for Content-Security-Policy meta tag.
+func (o *Options) ContentSecurityPolicy() string {
+	return o.contentSecurityPolicy
+}
+
 // SortedOptions returns options as a list of key value pairs, sorted by keys.
 func (o *Options) SortedOptions(redactSecret bool) []*Option {
 	var keyValues = map[string]interface{}{
@@ -735,6 +743,7 @@ func (o *Options) SortedOptions(redactSecret bool) []*Option {
 		"WORKER_POOL_SIZE":                       o.workerPoolSize,
 		"YOUTUBE_EMBED_URL_OVERRIDE":             o.youTubeEmbedUrlOverride,
 		"WEBAUTHN":                               o.webAuthn,
+		"CONTENT_SECURITY_POLICY":                o.contentSecurityPolicy,
 	}
 
 	keys := make([]string, 0, len(keyValues))
